@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Page background and base text color (light default, dark variant). */
+body {
+  @apply bg-page text-ink font-sans antialiased dark:bg-neutral-900 dark:text-neutral-100;
+}
+
+/* Slim horizontal scrollbar for the portfolio carousel. */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

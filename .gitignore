@@ -1,0 +1,15 @@
+# Dependencies
+node_modules/
+.next/
+out/
+
+# Build outputs
+*.tsbuildinfo
+next-env.d.ts
+
+# Env files (no secrets are committed for this static portfolio)
+.env*.local
+
+# OS / editor noise
+.DS_Store
+*.pem
