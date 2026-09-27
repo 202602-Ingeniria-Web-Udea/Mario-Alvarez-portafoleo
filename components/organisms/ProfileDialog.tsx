@@ -20,6 +20,9 @@ export default function ProfileDialog({ open, onClose }: ProfileDialogProps) {
   const { t } = useLanguage();
 
   // Close on Escape for keyboard users.
+  // Bound to `window`, not to the panel: the dialog has no focus trap yet,
+  // so the focused element may be anywhere in the document. The effect is
+  // gated on `open` and cleaned up so a closed dialog stops listening.
   useEffect(() => {
     if (!open) return;
     function onKey(event: KeyboardEvent) {
@@ -29,9 +32,13 @@ export default function ProfileDialog({ open, onClose }: ProfileDialogProps) {
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
 
+  // Returned after the hooks on purpose: the early exit must not skip
+  // hook calls, otherwise toggling the dialog would change the hook count.
   if (!open) return null;
 
   return (
+    // Known limitation: no focus trap, no focus restore and no background
+    // scroll lock. Tracked in README "Límites conocidos".
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
       role="dialog"
@@ -41,6 +48,8 @@ export default function ProfileDialog({ open, onClose }: ProfileDialogProps) {
     >
       <div
         className="max-h-[90vh] w-full max-w-md overflow-y-auto bg-white p-6 shadow-lg dark:bg-neutral-800"
+        // Click-to-close lives on the backdrop only; the panel swallows the
+        // click so selecting text or pressing a button inside does not close.
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-start justify-between">

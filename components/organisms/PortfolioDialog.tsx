@@ -21,6 +21,8 @@ export default function PortfolioDialog({
   const { t } = useLanguage();
 
   // Close on Escape for keyboard users.
+  // Same contract as ProfileDialog: window-level listener, gated on the
+  // dialog being open, removed on unmount or project change.
   useEffect(() => {
     if (!project) return;
     function onKey(event: KeyboardEvent) {
@@ -30,9 +32,13 @@ export default function PortfolioDialog({
     return () => window.removeEventListener("keydown", onKey);
   }, [project, onClose]);
 
+  // `null` doubles as the closed state, so the early exit must come after
+  // the hooks to keep the hook count stable across open/close cycles.
   if (!project) return null;
 
   return (
+    // Known limitation: no focus trap, no focus restore and no background
+    // scroll lock. Tracked in README "Límites conocidos".
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
       role="dialog"
@@ -42,8 +48,12 @@ export default function PortfolioDialog({
     >
       <div
         className="w-full max-w-lg overflow-hidden bg-white shadow-lg dark:bg-neutral-800"
+        // Stop the click from reaching the backdrop, otherwise any press
+        // inside the dialog would close it.
         onClick={(event) => event.stopPropagation()}
       >
+        {/* Explicit dimensions because this dialog is client-rendered: the
+            optimizer cannot infer the ratio from an imported static file. */}
         <Image
           src={project.image}
           alt={`${project.title} cover`}

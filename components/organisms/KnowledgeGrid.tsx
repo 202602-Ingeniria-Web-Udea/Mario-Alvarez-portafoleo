@@ -5,11 +5,14 @@ import { profile } from "@/data/profile";
 import { SectionTitle } from "@/components/atoms/SectionTitle";
 import { KnowledgeCard } from "@/components/molecules/KnowledgeCard";
 import { useLanguage } from "@/lib/LanguageContext";
+import { useReveal } from "@/lib/useReveal";
 
 export default function KnowledgeGrid() {
   const { t } = useLanguage();
+  // Fades the whole section in the first time it scrolls into view.
+  const sectionRef = useReveal<HTMLElement>();
   return (
-    <section aria-labelledby="knowledge-heading">
+    <section ref={sectionRef} aria-labelledby="knowledge-heading">
       <div id="knowledge-heading">
         <SectionTitle
           title={t.knowledge.title}

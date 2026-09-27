@@ -1,6 +1,12 @@
 // Central editable content for the portfolio.
 // Language-neutral facts live here; every user-facing string lives in
 // `@/lib/i18n` so the ES/EN toggle can swap them at runtime.
+//
+// Why the split: components stay disposable renderers, and content changes
+// (new project, new email, new photo) never require touching a component.
+// The interface arrays below deliberately store only the language-neutral
+// keys via `Pick<...>`, so TypeScript refuses a translation-only edit here
+// and a missing translation can never overwrite a real fact.
 
 export interface ContactItem {
   id: "city" | "phone" | "email" | "freelance";

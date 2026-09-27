@@ -5,11 +5,14 @@ import { profile } from "@/data/profile";
 import { SectionTitle } from "@/components/atoms/SectionTitle";
 import { EducationRow } from "@/components/molecules/EducationRow";
 import { useLanguage } from "@/lib/LanguageContext";
+import { useReveal } from "@/lib/useReveal";
 
 export default function EducationList() {
   const { t } = useLanguage();
+  // Fades the whole section in the first time it scrolls into view.
+  const sectionRef = useReveal<HTMLElement>();
   return (
-    <section aria-labelledby="education-heading">
+    <section ref={sectionRef} aria-labelledby="education-heading">
       <div id="education-heading">
         <SectionTitle
           title={t.education.title}

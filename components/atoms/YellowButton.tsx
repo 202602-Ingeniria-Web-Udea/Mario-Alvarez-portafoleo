@@ -28,6 +28,10 @@ export function YellowButton({
     </>
   );
   if (href) {
+    // Two real elements instead of one with a role: an <a> keeps native
+    // link semantics (middle click, copy address, navigation) and a
+    // <button> keeps native activation (Enter/Space). Rendering an <a> for
+    // actions, or a <button> with role="link", would break one of them.
     return (
       // `undefined` (not `false`) keeps the attribute off the DOM for
       // navigation links, since any value makes the browser download.

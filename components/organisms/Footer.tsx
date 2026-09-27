@@ -3,10 +3,17 @@
 
 import { profile } from "@/data/profile";
 import { SocialButton } from "@/components/atoms/SocialButton";
+import { useReveal } from "@/lib/useReveal";
 
 export default function Footer() {
+  // Fades the footer in the first time it scrolls into view. Without JS the
+  // `data-reveal` attribute is never written, so the footer renders visible.
+  const footerRef = useReveal<HTMLElement>();
   return (
-    <footer className="bg-white p-6 text-center shadow-sm dark:bg-neutral-800">
+    <footer
+      ref={footerRef}
+      className="bg-white p-6 text-center shadow-sm dark:bg-neutral-800"
+    >
       <div className="flex items-center justify-center gap-2">
         {profile.socials.slice(0, 3).map((social) => (
           <SocialButton

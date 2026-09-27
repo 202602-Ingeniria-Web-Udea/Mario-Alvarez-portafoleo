@@ -15,3 +15,54 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* ---------------------------------------------------------------------------
+   Entrance animations
+
+   The `fade-in` / `fade-up` keyframes and the `animate-fade-*` utilities come
+   from tailwind.config.ts (theme.extend) so Tailwind owns them. Only the two
+   things a utility cannot express live here: the reduced-motion opt-out and
+   the scroll-reveal state machine driven by `lib/useReveal.ts`.
+--------------------------------------------------------------------------- */
+
+/* Accessibility: when the OS asks for reduced motion, the entrance animations
+   are switched off entirely. `animation: none` returns each element to its
+   normal computed state (opacity 1, no transform), so nothing is hidden. This
+   block sits after `@tailwind utilities`, and both selectors have specificity
+   (0,1,0) just like the generated utility, so source order makes it win.
+
+   The attribute selectors (`[class~="…"]`) are deliberate: they match the
+   same elements as `.animate-fade-in`, but they are not class selectors, so
+   Tailwind's local `@apply` cache does not register them as the definition of
+   an `animate-fade-*` utility. Written as plain classes, the `@apply
+   animate-fade-up` below would resolve against THIS rule and inline it along
+   with its parent media query, producing an unreachable nested
+   `prefers-reduced-motion: reduce` block. */
+@media (prefers-reduced-motion: reduce) {
+  [class~="animate-fade-in"],
+  [class~="animate-fade-up"] {
+    animation: none;
+  }
+}
+
+/* Scroll reveal. `lib/useReveal.ts` sets `data-reveal="pending"` on mount and
+   flips it to `"in"` when the section reaches 15% of the viewport.
+
+   The pending state is the only place the design hides content, and it is
+   scoped to `prefers-reduced-motion: no-preference` on purpose: users who
+   asked for reduced motion never get an opacity:0 rule applied at all, so
+   they cannot be left with an invisible section.
+
+   The attribute itself is also written by JS only, never rendered by the
+   server. Without JS the HTML carries no `data-reveal`, neither rule matches,
+   and every section renders fully visible — the animations are a progressive
+   enhancement on top of a complete document, not the thing that reveals it. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-reveal]:not([data-reveal="in"]) {
+    opacity: 0;
+  }
+
+  [data-reveal="in"] {
+    @apply animate-fade-up;
+  }
+}

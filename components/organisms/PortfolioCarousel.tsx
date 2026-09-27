@@ -6,6 +6,7 @@ import { profile, type ProjectItem } from "@/data/profile";
 import { SectionTitle } from "@/components/atoms/SectionTitle";
 import { PortfolioCard } from "@/components/molecules/PortfolioCard";
 import { useLanguage } from "@/lib/LanguageContext";
+import { useReveal } from "@/lib/useReveal";
 
 interface PortfolioCarouselProps {
   onLearnMore: (project: ProjectItem) => void;
@@ -16,8 +17,16 @@ export default function PortfolioCarousel({
 }: PortfolioCarouselProps) {
   const { t } = useLanguage();
   const trackRef = useRef<HTMLDivElement>(null);
+  // Fades the whole section in the first time it scrolls into view. It never
+  // re-runs, so it cannot fight the carousel's own horizontal scroll.
+  const sectionRef = useReveal<HTMLElement>();
 
   function scrollBy(amount: number) {
+    // Scroll the track itself instead of translating it: the native
+    // scrollLeft engine keeps touch, trackpad, scrollbar and keyboard
+    // behavior for free, and CSS snap still settles the final position.
+    // 320px is wider than a card (260px mobile / 300px desktop) so the
+    // next slide lands fully visible rather than half-cut.
     trackRef.current?.scrollBy({ left: amount, behavior: "smooth" });
   }
 
@@ -32,7 +41,10 @@ export default function PortfolioCarousel({
   }));
 
   return (
-    <section aria-labelledby="portfolio-heading">
+    // `aria-labelledby` points at the wrapper, not the <h2>: SectionTitle
+    // renders the heading without an id prop, and assistive tech reads the
+    // accessible name from the referenced subtree's text content.
+    <section ref={sectionRef} aria-labelledby="portfolio-heading">
       <div id="portfolio-heading">
         <SectionTitle title={t.portfolio.title} subtitle={t.portfolio.subtitle} />
       </div>
@@ -56,6 +68,9 @@ export default function PortfolioCarousel({
       </div>
       <div
         ref={trackRef}
+        // Scroll width and snap are declared in CSS so the same track works
+        // for touch, trackpad and the arrow buttons. `.no-scrollbar` hides
+        // the bar without disabling scrolling.
         className="no-scrollbar mt-2 flex snap-x snap-mandatory gap-5 overflow-x-auto pb-2"
       >
         {projects.map((project) => (
