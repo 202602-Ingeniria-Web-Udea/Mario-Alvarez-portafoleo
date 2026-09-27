@@ -8,7 +8,7 @@
 
 **Autor:** Mario Andres Alvarez Isaza
 **Asignatura:** Ingeniería Web — Práctica 2
-**Institución:** Universidad de Antioquia (Medellín, Colombia)
+**deploy :** ![aqui](https://taller-2-ingenieria-web-2026.vercel.app/)
 
 ---
 
